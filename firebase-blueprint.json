@@ -1,0 +1,93 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "A user profile in the social network",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "User ID" },
+        "name": { "type": "string", "description": "User's display name" },
+        "avatar": { "type": "string", "description": "URL to user's avatar image" },
+        "cover": { "type": "string", "description": "URL to user's cover image" },
+        "bio": { "type": "string", "description": "User's bio" },
+        "friends": { "type": "array", "items": { "type": "string" }, "description": "List of friend UIDs" },
+        "friendRequests": { "type": "array", "items": { "type": "string" }, "description": "List of UIDs who sent friend requests" }
+      },
+      "required": ["uid", "name"]
+    },
+    "Post": {
+      "title": "Post",
+      "description": "A post created by a user",
+      "type": "object",
+      "properties": {
+        "authorId": { "type": "string", "description": "UID of the post author" },
+        "time": { "type": "string", "description": "Timestamp of the post" },
+        "content": { "type": "string", "description": "Text content of the post" },
+        "image": { "type": "string", "description": "URL to an image attached to the post" },
+        "video": { "type": "string", "description": "URL to a video attached to the post" },
+        "reactions": { "type": "object", "additionalProperties": { "type": "string" }, "description": "Map of user UIDs to reaction types" },
+        "comments": { "type": "array", "items": { "$ref": "#/entities/Comment" }, "description": "List of comments on the post" }
+      },
+      "required": ["authorId", "time", "content"]
+    },
+    "Comment": {
+      "title": "Comment",
+      "description": "A comment on a post",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique ID for the comment" },
+        "authorId": { "type": "string", "description": "UID of the comment author" },
+        "text": { "type": "string", "description": "Text content of the comment" },
+        "time": { "type": "string", "description": "Timestamp of the comment" }
+      },
+      "required": ["id", "authorId", "text", "time"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "A chat message",
+      "type": "object",
+      "properties": {
+        "senderId": { "type": "string", "description": "UID of the sender" },
+        "receiverId": { "type": "string", "description": "UID of the receiver (for direct messages)" },
+        "groupId": { "type": "string", "description": "ID of the group (for group messages)" },
+        "text": { "type": "string", "description": "Text content of the message" },
+        "image": { "type": "string", "description": "Image attachment URL" },
+        "audio": { "type": "string", "description": "Audio attachment base64 or URL" },
+        "audioDuration": { "type": "number", "description": "Audio duration in seconds" },
+        "replyTo": { "type": "object", "description": "Quoted message info" },
+        "reactions": { "type": "object", "description": "User reactions map" },
+        "timestamp": { "type": "string", "description": "Timestamp of the message" }
+      },
+      "required": ["senderId", "timestamp"]
+    },
+    "Group": {
+      "title": "Group",
+      "description": "A chat group",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Name of the group" },
+        "members": { "type": "array", "items": { "type": "string" }, "description": "List of member UIDs" },
+        "avatar": { "type": "string", "description": "URL to group's avatar image" }
+      },
+      "required": ["name", "members"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Stores user profiles"
+    },
+    "/posts/{postId}": {
+      "schema": { "$ref": "#/entities/Post" },
+      "description": "Stores posts"
+    },
+    "/messages/{messageId}": {
+      "schema": { "$ref": "#/entities/Message" },
+      "description": "Stores chat messages"
+    },
+    "/groups/{groupId}": {
+      "schema": { "$ref": "#/entities/Group" },
+      "description": "Stores chat groups"
+    }
+  }
+}
